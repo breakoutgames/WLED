@@ -4444,6 +4444,61 @@ static const char _data_FX_MODE_FLOW[] PROGMEM = "Flow@!,Zones;;!;;m12=1"; //ver
 
 
 /*
+ * Sweeps the entire palette across the segment.
+ * Speed controls animation speed, Intensity controls how many palette repetitions.
+ * check1 enables ping-pong mode for bidirectional sweep.
+ */
+void mode_palette_sweep(void)
+{
+  if (SEGLEN <= 1) FX_FALLBACK_STATIC;
+
+  // Calculate animation position based on speed
+  // Use 32-bit counter for smoother animation
+  uint32_t counter = strip.now * ((SEGMENT.speed >> 2) + 1);
+  
+  // Ping-pong mode: reverse direction at ends
+  bool pingPong = SEGMENT.check1;
+  uint16_t offset;
+  
+  if (pingPong) {
+    // Triangle wave for ping-pong: 0 -> 255 -> 0 -> 255...
+    uint16_t phase = (counter >> 8) & 0x1FF; // 0-511 range
+    if (phase >= 256) {
+      offset = 511 - phase; // descending: 255 -> 0
+    } else {
+      offset = phase; // ascending: 0 -> 255
+    }
+  } else {
+    // Normal mode: continuous sweep in one direction
+    offset = (counter >> 8) & 0xFF; // 0-255 range
+  }
+
+  // Intensity controls palette stretch: how many repetitions of the palette across the segment
+  // At intensity 0: 1/4 of palette shown, at 128: full palette, at 255: 4x palette
+  uint16_t paletteScale;
+  if (SEGMENT.intensity <= 128) {
+    // Map 0-128 intensity to 64-256 (1/4 to 1x palette)
+    paletteScale = 64 + ((SEGMENT.intensity * 192) >> 7);
+  } else {
+    // Map 128-255 intensity to 256-1024 (1x to 4x palette)
+    paletteScale = 256 + (((SEGMENT.intensity - 128) * 768) >> 7);
+  }
+
+  // Sweep the palette across the segment
+  for (unsigned i = 0; i < SEGLEN; i++) {
+    // Map LED position to palette index, scaled by paletteScale
+    uint16_t paletteIndex = ((i * paletteScale) / SEGLEN + offset) & 0xFF;
+    
+    // Get color from palette at this index
+    uint32_t color = SEGMENT.color_from_palette(paletteIndex, false, true, 0);
+    
+    SEGMENT.setPixelColor(i, color);
+  }
+}
+static const char _data_FX_MODE_PALETTE_SWEEP[] PROGMEM = "Palette Sweep@!,Scale,,,,Ping-pong;;!";
+
+
+/*
  * Dots waving around in a sine/pendulum motion.
  * Little pixel birds flying in a circle. By Aircoookie
  */
@@ -10873,6 +10928,7 @@ void WS2812FX::setupEffectData() {
   addEffect(FX_MODE_SINEWAVE, &mode_sinewave, _data_FX_MODE_SINEWAVE);
   addEffect(FX_MODE_PHASEDNOISE, &mode_phased_noise, _data_FX_MODE_PHASEDNOISE);
   addEffect(FX_MODE_FLOW, &mode_flow, _data_FX_MODE_FLOW);
+  addEffect(FX_MODE_PALETTE_SWEEP, &mode_palette_sweep, _data_FX_MODE_PALETTE_SWEEP);
   addEffect(FX_MODE_CHUNCHUN, &mode_chunchun, _data_FX_MODE_CHUNCHUN);  
   addEffect(FX_MODE_WASHING_MACHINE, &mode_washing_machine, _data_FX_MODE_WASHING_MACHINE);
   addEffect(FX_MODE_BLENDS, &mode_blends, _data_FX_MODE_BLENDS);
