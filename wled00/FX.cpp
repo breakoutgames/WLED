@@ -4445,8 +4445,8 @@ static const char _data_FX_MODE_FLOW[] PROGMEM = "Flow@!,Zones;;!;;m12=1"; //ver
 
 /*
  * Sweeps the entire palette across the segment.
- * Speed controls animation speed, Intensity controls how many palette repetitions.
- * check1 enables ping-pong mode for bidirectional sweep.
+ * Speed controls animation speed, Intensity (Scale) controls palette stretch.
+ * check1 enables ping-pong mode: alternates between normal and reversed palette.
  */
 void mode_palette_sweep(void)
 {
@@ -4456,38 +4456,44 @@ void mode_palette_sweep(void)
   // Use 32-bit counter for smoother animation
   uint32_t counter = strip.now * ((SEGMENT.speed >> 2) + 1);
   
-  // Ping-pong mode: reverse direction at ends
+  // Ping-pong mode: sweep palette, then sweep reversed palette
   bool pingPong = SEGMENT.check1;
+  bool reversePalette = false;
   uint16_t offset;
   
   if (pingPong) {
-    // Triangle wave for ping-pong: 0 -> 255 -> 0 -> 255...
-    uint16_t phase = (counter >> 8) & 0x1FF; // 0-511 range
-    if (phase >= 256) {
-      offset = 511 - phase; // descending: 255 -> 0
-    } else {
-      offset = phase; // ascending: 0 -> 255
-    }
+    // Continuous sweep but reverse palette colors on alternating cycles
+    uint16_t phase = (counter >> 8) & 0x1FF; // 0-511 range for full cycle
+    offset = phase & 0xFF; // 0-255 offset, always increasing within each half-cycle
+    reversePalette = (phase >= 256); // reverse palette in second half of cycle
   } else {
     // Normal mode: continuous sweep in one direction
     offset = (counter >> 8) & 0xFF; // 0-255 range
   }
 
-  // Intensity controls palette stretch: how many repetitions of the palette across the segment
-  // At intensity 0: 1/4 of palette shown, at 128: full palette, at 255: 4x palette
+  // Intensity controls palette stretch (reversed: higher = more stretched)
+  // At intensity 0: 4x palette repetitions, at 128: full palette, at 255: 1/4 palette (stretched)
   uint16_t paletteScale;
-  if (SEGMENT.intensity <= 128) {
-    // Map 0-128 intensity to 64-256 (1/4 to 1x palette)
-    paletteScale = 64 + ((SEGMENT.intensity * 192) >> 7);
+  if (SEGMENT.intensity >= 128) {
+    // Map 128-255 intensity to 256-64 (1x to 1/4 palette = more stretched)
+    // 192/128 = 1.5x scaling factor for 128 intensity steps to 192 palette units
+    paletteScale = 256 - (((SEGMENT.intensity - 128) * 192) >> 7);
   } else {
-    // Map 128-255 intensity to 256-1024 (1x to 4x palette)
-    paletteScale = 256 + (((SEGMENT.intensity - 128) * 768) >> 7);
+    // Map 0-128 intensity to 1024-256 (4x to 1x palette = more repetitions)
+    // 768/128 = 6x scaling factor for the repetition range
+    paletteScale = 1024 - (((128 - SEGMENT.intensity) * 768) >> 7);
   }
 
   // Sweep the palette across the segment
   for (unsigned i = 0; i < SEGLEN; i++) {
     // Map LED position to palette index, scaled by paletteScale
+    // Use uint16_t for intermediate calculation to prevent overflow before masking
     uint16_t paletteIndex = ((i * paletteScale) / SEGLEN + offset) & 0xFF;
+    
+    // Reverse palette if in ping-pong mode during second half of cycle
+    if (reversePalette) {
+      paletteIndex = 255 - paletteIndex;
+    }
     
     // Get color from palette at this index
     uint32_t color = SEGMENT.color_from_palette(paletteIndex, false, true, 0);
