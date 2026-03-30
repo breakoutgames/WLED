@@ -41,16 +41,15 @@ static void mode_palette_sweep(void)
     offset = (counter >> 8) & 0xFF; // 0-255 range
   }
 
-  // Intensity controls palette stretch (reversed: higher = more stretched)
-  // At intensity 0: 4x palette repetitions, at 128: full palette, at 255: 1/4 palette (stretched)
+  // Intensity controls palette scale:
+  // Center (128) = 1x full palette. Lower values = more repetitions (up to ~4x at 0).
+  // Higher values = more stretched (down to ~1/4 scale at 255).
   uint16_t paletteScale;
   if (SEGMENT.intensity >= 128) {
-    // Map 128-255 intensity to 256-64 (1x to 1/4 palette = more stretched)
-    // 192/128 = 1.5x scaling factor for 128 intensity steps to 192 palette units
+    // Map 128-255 intensity to paletteScale 256-66 (1x to ~1/4 scale = more stretched)
     paletteScale = 256 - (((SEGMENT.intensity - 128) * 192) >> 7);
   } else {
-    // Map 0-128 intensity to 1024-256 (4x to 1x palette = more repetitions)
-    // 768/128 = 6x scaling factor for the repetition range
+    // Map 0-127 intensity to paletteScale 256-1018 (1x to ~4x repetitions)
     paletteScale = 1024 - (((128 - SEGMENT.intensity) * 768) >> 7);
   }
 
