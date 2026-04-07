@@ -800,7 +800,7 @@ class PolyBus {
       case I_32_I2_2805_5: if (_useParallelI2S) return (static_cast<B_32_IP_2805_5*>(busPtr))->CanShow(); else return (static_cast<B_32_I2_2805_5*>(busPtr))->CanShow(); break;
       case I_32_I2_TM1914_3: if (_useParallelI2S) return (static_cast<B_32_IP_TM1914_3*>(busPtr))->CanShow(); else return (static_cast<B_32_I2_TM1914_3*>(busPtr))->CanShow(); break;
       case I_32_I2_SM16825_5: if (_useParallelI2S) return (static_cast<B_32_IP_SM16825_5*>(busPtr))->CanShow(); else return (static_cast<B_32_I2_SM16825_5*>(busPtr))->CanShow(); break;
-      case I_32_I2_2815B_3: if (_useParallelI2S) return (static_cast<B_32_IP_2815B_3*>(busPtr))->CanShow(); return (static_cast<B_32_I2_2815B_3*>(busPtr))->CanShow(); break;
+      case I_32_I2_2815B_3: if (_useParallelI2S) return (static_cast<B_32_IP_2815B_3*>(busPtr))->CanShow(); else return (static_cast<B_32_I2_2815B_3*>(busPtr))->CanShow(); break;
       #endif
     #endif
       case I_HS_DOT_3: return (static_cast<B_HS_DOT_3*>(busPtr))->CanShow(); break;
@@ -1258,7 +1258,7 @@ class PolyBus {
       case I_32_I2_2805_5: size += (_useParallelI2S) ? (static_cast<B_32_IP_2805_5*>(busPtr))->PixelsSize()*4 : (static_cast<B_32_I2_2805_5*>(busPtr))->PixelsSize()*4; break;
       case I_32_I2_TM1914_3: size += (_useParallelI2S) ? (static_cast<B_32_IP_TM1914_3*>(busPtr))->PixelsSize()*4 : (static_cast<B_32_I2_TM1914_3*>(busPtr))->PixelsSize()*4; break;
       case I_32_I2_SM16825_5: size += (_useParallelI2S) ? (static_cast<B_32_IP_SM16825_5*>(busPtr))->PixelsSize()*4 : (static_cast<B_32_I2_SM16825_5*>(busPtr))->PixelsSize()*4; break;
-      case I_32_I2_2815B_3: if (_useParallelI2S) size = (static_cast<B_32_IP_2815B_3*>(busPtr))->PixelsSize(); else size += (static_cast<B_32_I2_2815B_3*>(busPtr))->PixelsSize()*2; break;
+      case I_32_I2_2815B_3: size += (_useParallelI2S) ? (static_cast<B_32_IP_2815B_3*>(busPtr))->PixelsSize()*4 : (static_cast<B_32_I2_2815B_3*>(busPtr))->PixelsSize()*4; break;
       #endif
     #endif
       case I_HS_DOT_3: size = (static_cast<B_HS_DOT_3*>(busPtr))->PixelsSize()*2; break;
