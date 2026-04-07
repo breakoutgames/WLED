@@ -33,6 +33,29 @@ License along with NeoPixel.  If not, see
 // Use the NeoEspRmtSpeed types from the driver-based implementation
 #include <NeoPixelBus.h>
 
+// WS2815B speed class - timing from WS2815B-2121 datasheet (center of each timing window)
+// T0H: 300ns (center of 220-380ns), T0L: 2950ns (center of 900-5000ns)
+// T1H: 710ns (center of 580-840ns), T1L: 2800ns (center of 600-5000ns)
+// Reset: 300us (above 280us minimum)
+class NeoEsp32RmtSpeedWs2815b : public NeoEsp32RmtSpeedBase
+{
+public:
+    const static DRAM_ATTR uint32_t RmtBit0 = Item32Val(300, 2950);
+    const static DRAM_ATTR uint32_t RmtBit1 = Item32Val(710, 2800);
+    const static DRAM_ATTR uint16_t RmtDurationReset = FromNs(300000); // 300us
+
+    static void IRAM_ATTR Translate(const void* src,
+        rmt_item32_t* dest,
+        size_t src_size,
+        size_t wanted_num,
+        size_t* translated_size,
+        size_t* item_num)
+    {
+        _translate(src, dest, src_size, wanted_num, translated_size, item_num,
+            RmtBit0, RmtBit1, RmtDurationReset);
+    }
+};
+
 
 namespace NeoEsp32RmtHiMethodDriver {
     // Install the driver for a specific channel, specifying timing properties
@@ -194,6 +217,7 @@ typedef NeoEsp32RmtHIMethodBase<NeoEsp32RmtSpeedTx1812, NeoEsp32RmtChannelN> Neo
 typedef NeoEsp32RmtHIMethodBase<NeoEsp32RmtSpeedGs1903, NeoEsp32RmtChannelN> NeoEsp32RmtHINGs1903Method;
 typedef NeoEsp32RmtHIMethodBase<NeoEsp32RmtSpeed800Kbps, NeoEsp32RmtChannelN> NeoEsp32RmtHIN800KbpsMethod;
 typedef NeoEsp32RmtHIMethodBase<NeoEsp32RmtSpeed400Kbps, NeoEsp32RmtChannelN> NeoEsp32RmtHIN400KbpsMethod;
+typedef NeoEsp32RmtHIMethodBase<NeoEsp32RmtSpeedWs2815b, NeoEsp32RmtChannelN> NeoEsp32RmtHINWs2815bMethod;
 typedef NeoEsp32RmtHINWs2805Method NeoEsp32RmtHINWs2814Method;
 
 typedef NeoEsp32RmtHIMethodBase<NeoEsp32RmtSpeedWs2811, NeoEsp32RmtChannel0> NeoEsp32RmtHI0Ws2811Method;
