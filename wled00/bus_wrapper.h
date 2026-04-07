@@ -75,6 +75,11 @@
 #define I_8266_U1_SM16825_5 46
 #define I_8266_DM_SM16825_5 47
 #define I_8266_BB_SM16825_5 48
+//WS2815B (RGB)
+#define I_8266_U0_2815B_3 49
+#define I_8266_U1_2815B_3 50
+#define I_8266_DM_2815B_3 51
+#define I_8266_BB_2815B_3 52
 
 /*** ESP32 Neopixel methods ***/
 //RGB
@@ -113,6 +118,9 @@
 //SM16825 (RGBCW)
 #define I_32_RN_SM16825_5 45
 #define I_32_I2_SM16825_5 46
+//WS2815B (RGB)
+#define I_32_RN_2815B_3 49
+#define I_32_I2_2815B_3 50
 
 //APA102
 #define I_HS_DOT_3 101 //hardware SPI
@@ -200,6 +208,11 @@
 #define B_8266_U1_SM16825_5 NeoPixelBus<NeoRgbwcSm16825eFeature, NeoEsp8266Uart1Ws2813Method>
 #define B_8266_DM_SM16825_5 NeoPixelBus<NeoRgbwcSm16825eFeature, NeoEsp8266Dma800KbpsMethod>
 #define B_8266_BB_SM16825_5 NeoPixelBus<NeoRgbwcSm16825eFeature, NeoEsp8266BitBangWs2813Method>
+//WS2815B (RGB)
+#define B_8266_U0_2815B_3 NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart0Ws2813Method>
+#define B_8266_U1_2815B_3 NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart1Ws2813Method>
+#define B_8266_DM_2815B_3 NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod>
+#define B_8266_BB_2815B_3 NeoPixelBus<NeoGrbFeature, NeoEsp8266BitBang800KbpsMethod>
 #endif
 
 /*** ESP32 Neopixel methods ***/
@@ -250,6 +263,7 @@
 #define NeoEsp32RmtMethod(x) NeoEsp32RmtHIN ## x ## Method
 #else
 #define NeoEsp32RmtMethod(x) NeoEsp32RmtN ## x ## Method
+typedef NeoEsp32RmtMethodBase<NeoEsp32RmtSpeedWs2815b, NeoEsp32RmtChannelN> NeoEsp32RmtNWs2815bMethod;
 #endif
 
 //RGB
@@ -301,6 +315,10 @@
 #define B_32_RN_SM16825_5 NeoPixelBus<NeoRgbcwSm16825eFeature, NeoEsp32RmtMethod(Ws2812x)>
 #define B_32_I2_SM16825_5 NeoPixelBus<NeoRgbcwSm16825eFeature, X1Ws2812xMethod>
 #define B_32_IP_SM16825_5 NeoPixelBus<NeoRgbcwSm16825eFeature, X8Ws2812xMethod> // parallel I2S
+//WS2815B (RGB)
+#define B_32_RN_2815B_3 NeoPixelBus<NeoGrbFeature, NeoEsp32RmtMethod(Ws2815b)>
+#define B_32_I2_2815B_3 NeoPixelBus<NeoGrbFeature, X1Ws2812xMethod>
+#define B_32_IP_2815B_3 NeoPixelBus<NeoGrbFeature, X8Ws2812xMethod>
 #endif
 
 //APA102
@@ -437,6 +455,10 @@ class PolyBus {
       case I_8266_U1_SM16825_5: (static_cast<B_8266_U1_SM16825_5*>(busPtr))->Begin(); break;
       case I_8266_DM_SM16825_5: (static_cast<B_8266_DM_SM16825_5*>(busPtr))->Begin(); break;
       case I_8266_BB_SM16825_5: (static_cast<B_8266_BB_SM16825_5*>(busPtr))->Begin(); break;
+      case I_8266_U0_2815B_3: (static_cast<B_8266_U0_2815B_3*>(busPtr))->Begin(); break;
+      case I_8266_U1_2815B_3: (static_cast<B_8266_U1_2815B_3*>(busPtr))->Begin(); break;
+      case I_8266_DM_2815B_3: (static_cast<B_8266_DM_2815B_3*>(busPtr))->Begin(); break;
+      case I_8266_BB_2815B_3: (static_cast<B_8266_BB_2815B_3*>(busPtr))->Begin(); break;
     #endif
     #ifdef ARDUINO_ARCH_ESP32
       // RMT buses
@@ -452,6 +474,7 @@ class PolyBus {
       case I_32_RN_2805_5: (static_cast<B_32_RN_2805_5*>(busPtr))->Begin(); break;
       case I_32_RN_TM1914_3: beginTM1914<B_32_RN_TM1914_3*>(busPtr); break;
       case I_32_RN_SM16825_5: (static_cast<B_32_RN_SM16825_5*>(busPtr))->Begin(); break;
+      case I_32_RN_2815B_3: (static_cast<B_32_RN_2815B_3*>(busPtr))->Begin(); break;
       // I2S1 bus or parellel buses
       #ifndef CONFIG_IDF_TARGET_ESP32C3
       case I_32_I2_NEO_3: if (_useParallelI2S) (static_cast<B_32_IP_NEO_3*>(busPtr))->Begin(); else (static_cast<B_32_I2_NEO_3*>(busPtr))->Begin(); break;
@@ -466,6 +489,7 @@ class PolyBus {
       case I_32_I2_2805_5: if (_useParallelI2S) (static_cast<B_32_IP_2805_5*>(busPtr))->Begin(); else (static_cast<B_32_I2_2805_5*>(busPtr))->Begin(); break;
       case I_32_I2_TM1914_3: if (_useParallelI2S) beginTM1914<B_32_IP_TM1914_3*>(busPtr); else beginTM1914<B_32_I2_TM1914_3*>(busPtr); break;
       case I_32_I2_SM16825_5: if (_useParallelI2S) (static_cast<B_32_IP_SM16825_5*>(busPtr))->Begin(); else (static_cast<B_32_I2_SM16825_5*>(busPtr))->Begin(); break;
+      case I_32_I2_2815B_3: if (_useParallelI2S) (static_cast<B_32_IP_2815B_3*>(busPtr))->Begin(); else (static_cast<B_32_I2_2815B_3*>(busPtr))->Begin(); break;
       #endif
       // ESP32 can (and should, to avoid inadvertantly driving the chip select signal) specify the pins used for SPI, but only in begin()
       case I_HS_DOT_3: beginDotStar<B_HS_DOT_3*>(busPtr, pins[1], -1, pins[0], -1, clock_kHz); break;
@@ -535,6 +559,10 @@ class PolyBus {
       case I_8266_U1_SM16825_5: busPtr = new B_8266_U1_SM16825_5(len, pins[0]); break;
       case I_8266_DM_SM16825_5: busPtr = new B_8266_DM_SM16825_5(len, pins[0]); break;
       case I_8266_BB_SM16825_5: busPtr = new B_8266_BB_SM16825_5(len, pins[0]); break;
+      case I_8266_U0_2815B_3: busPtr = new B_8266_U0_2815B_3(len, pins[0]); break;
+      case I_8266_U1_2815B_3: busPtr = new B_8266_U1_2815B_3(len, pins[0]); break;
+      case I_8266_DM_2815B_3: busPtr = new B_8266_DM_2815B_3(len, pins[0]); break;
+      case I_8266_BB_2815B_3: busPtr = new B_8266_BB_2815B_3(len, pins[0]); break;
     #endif
     #ifdef ARDUINO_ARCH_ESP32
       // RMT buses
@@ -550,6 +578,7 @@ class PolyBus {
       case I_32_RN_2805_5: busPtr = new B_32_RN_2805_5(len, pins[0], (NeoBusChannel)_rmtChannel++); break;
       case I_32_RN_TM1914_3: busPtr = new B_32_RN_TM1914_3(len, pins[0], (NeoBusChannel)_rmtChannel++); break;
       case I_32_RN_SM16825_5: busPtr = new B_32_RN_SM16825_5(len, pins[0], (NeoBusChannel)_rmtChannel++); break;
+      case I_32_RN_2815B_3: busPtr = new B_32_RN_2815B_3(len, pins[0], (NeoBusChannel)_rmtChannel++); break;
       // I2S1 bus or paralell buses
       #ifndef CONFIG_IDF_TARGET_ESP32C3
       case I_32_I2_NEO_3: if (_useParallelI2S) busPtr = new B_32_IP_NEO_3(len, pins[0]); else busPtr = new B_32_I2_NEO_3(len, pins[0]); break;
@@ -564,6 +593,7 @@ class PolyBus {
       case I_32_I2_2805_5: if (_useParallelI2S) busPtr = new B_32_IP_2805_5(len, pins[0]); else busPtr = new B_32_I2_2805_5(len, pins[0]); break;
       case I_32_I2_TM1914_3: if (_useParallelI2S) busPtr = new B_32_IP_TM1914_3(len, pins[0]); else busPtr = new B_32_I2_TM1914_3(len, pins[0]); break;
       case I_32_I2_SM16825_5: if (_useParallelI2S) busPtr = new B_32_IP_SM16825_5(len, pins[0]); else busPtr = new B_32_I2_SM16825_5(len, pins[0]); break;
+      case I_32_I2_2815B_3: if (_useParallelI2S) busPtr = new B_32_IP_2815B_3(len, pins[0]); else busPtr = new B_32_I2_2815B_3(len, pins[0]); break;
       #endif
     #endif
       // for 2-wire: pins[1] is clk, pins[0] is dat.  begin expects (len, clk, dat)
@@ -634,6 +664,10 @@ class PolyBus {
       case I_8266_U1_SM16825_5: (static_cast<B_8266_U1_SM16825_5*>(busPtr))->Show(consistent); break;
       case I_8266_DM_SM16825_5: (static_cast<B_8266_DM_SM16825_5*>(busPtr))->Show(consistent); break;
       case I_8266_BB_SM16825_5: (static_cast<B_8266_BB_SM16825_5*>(busPtr))->Show(consistent); break;
+      case I_8266_U0_2815B_3: (static_cast<B_8266_U0_2815B_3*>(busPtr))->Show(consistent); break;
+      case I_8266_U1_2815B_3: (static_cast<B_8266_U1_2815B_3*>(busPtr))->Show(consistent); break;
+      case I_8266_DM_2815B_3: (static_cast<B_8266_DM_2815B_3*>(busPtr))->Show(consistent); break;
+      case I_8266_BB_2815B_3: (static_cast<B_8266_BB_2815B_3*>(busPtr))->Show(consistent); break;
     #endif
     #ifdef ARDUINO_ARCH_ESP32
       // RMT buses
@@ -649,6 +683,7 @@ class PolyBus {
       case I_32_RN_2805_5: (static_cast<B_32_RN_2805_5*>(busPtr))->Show(consistent); break;
       case I_32_RN_TM1914_3: (static_cast<B_32_RN_TM1914_3*>(busPtr))->Show(consistent); break;
       case I_32_RN_SM16825_5: (static_cast<B_32_RN_SM16825_5*>(busPtr))->Show(consistent); break;
+      case I_32_RN_2815B_3: (static_cast<B_32_RN_2815B_3*>(busPtr))->Show(consistent); break;
       // I2S1 bus or paralell buses
       #ifndef CONFIG_IDF_TARGET_ESP32C3
       case I_32_I2_NEO_3: if (_useParallelI2S) (static_cast<B_32_IP_NEO_3*>(busPtr))->Show(consistent); else (static_cast<B_32_I2_NEO_3*>(busPtr))->Show(consistent); break;
@@ -663,6 +698,7 @@ class PolyBus {
       case I_32_I2_2805_5: if (_useParallelI2S) (static_cast<B_32_IP_2805_5*>(busPtr))->Show(consistent); else (static_cast<B_32_I2_2805_5*>(busPtr))->Show(consistent); break;
       case I_32_I2_TM1914_3: if (_useParallelI2S) (static_cast<B_32_IP_TM1914_3*>(busPtr))->Show(consistent); else (static_cast<B_32_I2_TM1914_3*>(busPtr))->Show(consistent); break;
       case I_32_I2_SM16825_5: if (_useParallelI2S) (static_cast<B_32_IP_SM16825_5*>(busPtr))->Show(consistent); else (static_cast<B_32_I2_SM16825_5*>(busPtr))->Show(consistent); break;
+      case I_32_I2_2815B_3: if (_useParallelI2S) (static_cast<B_32_IP_2815B_3*>(busPtr))->Show(consistent); else (static_cast<B_32_I2_2815B_3*>(busPtr))->Show(consistent); break;
       #endif
     #endif
       case I_HS_DOT_3: (static_cast<B_HS_DOT_3*>(busPtr))->Show(consistent); break;
@@ -730,6 +766,10 @@ class PolyBus {
       case I_8266_U1_SM16825_5: return (static_cast<B_8266_U1_SM16825_5*>(busPtr))->CanShow(); break;
       case I_8266_DM_SM16825_5: return (static_cast<B_8266_DM_SM16825_5*>(busPtr))->CanShow(); break;
       case I_8266_BB_SM16825_5: return (static_cast<B_8266_BB_SM16825_5*>(busPtr))->CanShow(); break;
+      case I_8266_U0_2815B_3: return (static_cast<B_8266_U0_2815B_3*>(busPtr))->CanShow(); break;
+      case I_8266_U1_2815B_3: return (static_cast<B_8266_U1_2815B_3*>(busPtr))->CanShow(); break;
+      case I_8266_DM_2815B_3: return (static_cast<B_8266_DM_2815B_3*>(busPtr))->CanShow(); break;
+      case I_8266_BB_2815B_3: return (static_cast<B_8266_BB_2815B_3*>(busPtr))->CanShow(); break;
     #endif
     #ifdef ARDUINO_ARCH_ESP32
       // RMT buses
@@ -745,6 +785,7 @@ class PolyBus {
       case I_32_RN_2805_5: return (static_cast<B_32_RN_2805_5*>(busPtr))->CanShow(); break;
       case I_32_RN_TM1914_3: return (static_cast<B_32_RN_TM1914_3*>(busPtr))->CanShow(); break;
       case I_32_RN_SM16825_5: return (static_cast<B_32_RN_SM16825_5*>(busPtr))->CanShow(); break;
+      case I_32_RN_2815B_3: return (static_cast<B_32_RN_2815B_3*>(busPtr))->CanShow(); break;
       // I2S1 bus or paralell buses
       #ifndef CONFIG_IDF_TARGET_ESP32C3
       case I_32_I2_NEO_3: if (_useParallelI2S) return (static_cast<B_32_IP_NEO_3*>(busPtr))->CanShow(); else return (static_cast<B_32_I2_NEO_3*>(busPtr))->CanShow(); break;
@@ -759,6 +800,7 @@ class PolyBus {
       case I_32_I2_2805_5: if (_useParallelI2S) return (static_cast<B_32_IP_2805_5*>(busPtr))->CanShow(); else return (static_cast<B_32_I2_2805_5*>(busPtr))->CanShow(); break;
       case I_32_I2_TM1914_3: if (_useParallelI2S) return (static_cast<B_32_IP_TM1914_3*>(busPtr))->CanShow(); else return (static_cast<B_32_I2_TM1914_3*>(busPtr))->CanShow(); break;
       case I_32_I2_SM16825_5: if (_useParallelI2S) return (static_cast<B_32_IP_SM16825_5*>(busPtr))->CanShow(); else return (static_cast<B_32_I2_SM16825_5*>(busPtr))->CanShow(); break;
+      case I_32_I2_2815B_3: if (_useParallelI2S) return (static_cast<B_32_IP_2815B_3*>(busPtr))->CanShow(); else return (static_cast<B_32_I2_2815B_3*>(busPtr))->CanShow(); break;
       #endif
     #endif
       case I_HS_DOT_3: return (static_cast<B_HS_DOT_3*>(busPtr))->CanShow(); break;
@@ -852,6 +894,10 @@ class PolyBus {
       case I_8266_U1_SM16825_5: (static_cast<B_8266_U1_SM16825_5*>(busPtr))->SetPixelColor(pix, Rgbww80Color(col.R*257, col.G*257, col.B*257, cctWW*257, cctCW*257)); break;
       case I_8266_DM_SM16825_5: (static_cast<B_8266_DM_SM16825_5*>(busPtr))->SetPixelColor(pix, Rgbww80Color(col.R*257, col.G*257, col.B*257, cctWW*257, cctCW*257)); break;
       case I_8266_BB_SM16825_5: (static_cast<B_8266_BB_SM16825_5*>(busPtr))->SetPixelColor(pix, Rgbww80Color(col.R*257, col.G*257, col.B*257, cctWW*257, cctCW*257)); break;
+      case I_8266_U0_2815B_3: (static_cast<B_8266_U0_2815B_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); break;
+      case I_8266_U1_2815B_3: (static_cast<B_8266_U1_2815B_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); break;
+      case I_8266_DM_2815B_3: (static_cast<B_8266_DM_2815B_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); break;
+      case I_8266_BB_2815B_3: (static_cast<B_8266_BB_2815B_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); break;
     #endif
     #ifdef ARDUINO_ARCH_ESP32
       // RMT buses
@@ -867,6 +913,7 @@ class PolyBus {
       case I_32_RN_2805_5: (static_cast<B_32_RN_2805_5*>(busPtr))->SetPixelColor(pix, RgbwwColor(col.R, col.G, col.B, cctWW, cctCW)); break;
       case I_32_RN_TM1914_3: (static_cast<B_32_RN_TM1914_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); break;
       case I_32_RN_SM16825_5: (static_cast<B_32_RN_SM16825_5*>(busPtr))->SetPixelColor(pix, Rgbww80Color(col.R*257, col.G*257, col.B*257, cctWW*257, cctCW*257)); break;
+      case I_32_RN_2815B_3: (static_cast<B_32_RN_2815B_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); break;
       // I2S1 bus or paralell buses
       #ifndef CONFIG_IDF_TARGET_ESP32C3
       case I_32_I2_NEO_3: if (_useParallelI2S) (static_cast<B_32_IP_NEO_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); else (static_cast<B_32_I2_NEO_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); break;
@@ -881,6 +928,7 @@ class PolyBus {
       case I_32_I2_2805_5: if (_useParallelI2S) (static_cast<B_32_IP_2805_5*>(busPtr))->SetPixelColor(pix, RgbwwColor(col.R, col.G, col.B, cctWW, cctCW)); else (static_cast<B_32_I2_2805_5*>(busPtr))->SetPixelColor(pix, RgbwwColor(col.R, col.G, col.B, cctWW, cctCW)); break;
       case I_32_I2_TM1914_3: if (_useParallelI2S) (static_cast<B_32_IP_TM1914_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); else (static_cast<B_32_I2_TM1914_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); break;
       case I_32_I2_SM16825_5: if (_useParallelI2S) (static_cast<B_32_IP_SM16825_5*>(busPtr))->SetPixelColor(pix, Rgbww80Color(col.R*257, col.G*257, col.B*257, cctWW*257, cctCW*257)); else (static_cast<B_32_I2_SM16825_5*>(busPtr))->SetPixelColor(pix, Rgbww80Color(col.R*257, col.G*257, col.B*257, cctWW*257, cctCW*257)); break;
+      case I_32_I2_2815B_3: if (_useParallelI2S) (static_cast<B_32_IP_2815B_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); else (static_cast<B_32_I2_2815B_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); break;
       #endif
     #endif
       case I_HS_DOT_3: (static_cast<B_HS_DOT_3*>(busPtr))->SetPixelColor(pix, RgbColor(col)); break;
@@ -949,6 +997,10 @@ class PolyBus {
       case I_8266_U1_SM16825_5: { Rgbww80Color c = (static_cast<B_8266_U1_SM16825_5*>(busPtr))->GetPixelColor(pix); col = RGBW32(c.R,c.G,c.B,max(c.WW,c.CW)); } break; // will not return original W
       case I_8266_DM_SM16825_5: { Rgbww80Color c = (static_cast<B_8266_DM_SM16825_5*>(busPtr))->GetPixelColor(pix); col = RGBW32(c.R,c.G,c.B,max(c.WW,c.CW)); } break; // will not return original W
       case I_8266_BB_SM16825_5: { Rgbww80Color c = (static_cast<B_8266_BB_SM16825_5*>(busPtr))->GetPixelColor(pix); col = RGBW32(c.R,c.G,c.B,max(c.WW,c.CW)); } break; // will not return original W
+      case I_8266_U0_2815B_3: col = (static_cast<B_8266_U0_2815B_3*>(busPtr))->GetPixelColor(pix); break;
+      case I_8266_U1_2815B_3: col = (static_cast<B_8266_U1_2815B_3*>(busPtr))->GetPixelColor(pix); break;
+      case I_8266_DM_2815B_3: col = (static_cast<B_8266_DM_2815B_3*>(busPtr))->GetPixelColor(pix); break;
+      case I_8266_BB_2815B_3: col = (static_cast<B_8266_BB_2815B_3*>(busPtr))->GetPixelColor(pix); break;
     #endif
     #ifdef ARDUINO_ARCH_ESP32
       // RMT buses
@@ -964,6 +1016,7 @@ class PolyBus {
       case I_32_RN_2805_5: { RgbwwColor c = (static_cast<B_32_RN_2805_5*>(busPtr))->GetPixelColor(pix); col = RGBW32(c.R,c.G,c.B,max(c.WW,c.CW)); } break; // will not return original W
       case I_32_RN_TM1914_3: col = (static_cast<B_32_RN_TM1914_3*>(busPtr))->GetPixelColor(pix); break;
       case I_32_RN_SM16825_5: { Rgbww80Color c = (static_cast<B_32_RN_SM16825_5*>(busPtr))->GetPixelColor(pix); col = RGBW32(c.R/257,c.G/257,c.B/257,max(c.WW,c.CW)/257); } break; // will not return original W
+      case I_32_RN_2815B_3: col = (static_cast<B_32_RN_2815B_3*>(busPtr))->GetPixelColor(pix); break;
       // I2S1 bus or paralell buses
       #ifndef CONFIG_IDF_TARGET_ESP32C3
       case I_32_I2_NEO_3: col = (_useParallelI2S) ? (static_cast<B_32_IP_NEO_3*>(busPtr))->GetPixelColor(pix) : (static_cast<B_32_I2_NEO_3*>(busPtr))->GetPixelColor(pix); break;
@@ -978,6 +1031,7 @@ class PolyBus {
       case I_32_I2_2805_5: { RgbwwColor c = (_useParallelI2S) ? (static_cast<B_32_IP_2805_5*>(busPtr))->GetPixelColor(pix) : (static_cast<B_32_I2_2805_5*>(busPtr))->GetPixelColor(pix); col = RGBW32(c.R,c.G,c.B,max(c.WW,c.CW)); } break; // will not return original W
       case I_32_I2_TM1914_3: col = (_useParallelI2S) ? (static_cast<B_32_IP_TM1914_3*>(busPtr))->GetPixelColor(pix) : (static_cast<B_32_I2_TM1914_3*>(busPtr))->GetPixelColor(pix); break;
       case I_32_I2_SM16825_5: { Rgbww80Color c = (_useParallelI2S) ? (static_cast<B_32_IP_SM16825_5*>(busPtr))->GetPixelColor(pix) : (static_cast<B_32_I2_SM16825_5*>(busPtr))->GetPixelColor(pix); col = RGBW32(c.R/257,c.G/257,c.B/257,max(c.WW,c.CW)/257); } break; // will not return original W
+      case I_32_I2_2815B_3: col = (_useParallelI2S) ? (static_cast<B_32_IP_2815B_3*>(busPtr))->GetPixelColor(pix) : (static_cast<B_32_I2_2815B_3*>(busPtr))->GetPixelColor(pix); break;
       #endif
     #endif
       case I_HS_DOT_3: col = (static_cast<B_HS_DOT_3*>(busPtr))->GetPixelColor(pix); break;
@@ -1064,6 +1118,10 @@ class PolyBus {
       case I_8266_U1_SM16825_5: delete (static_cast<B_8266_U1_SM16825_5*>(busPtr)); break;
       case I_8266_DM_SM16825_5: delete (static_cast<B_8266_DM_SM16825_5*>(busPtr)); break;
       case I_8266_BB_SM16825_5: delete (static_cast<B_8266_BB_SM16825_5*>(busPtr)); break;
+      case I_8266_U0_2815B_3: delete (static_cast<B_8266_U0_2815B_3*>(busPtr)); break;
+      case I_8266_U1_2815B_3: delete (static_cast<B_8266_U1_2815B_3*>(busPtr)); break;
+      case I_8266_DM_2815B_3: delete (static_cast<B_8266_DM_2815B_3*>(busPtr)); break;
+      case I_8266_BB_2815B_3: delete (static_cast<B_8266_BB_2815B_3*>(busPtr)); break;
     #endif
     #ifdef ARDUINO_ARCH_ESP32
       // RMT buses
@@ -1079,6 +1137,7 @@ class PolyBus {
       case I_32_RN_2805_5: delete (static_cast<B_32_RN_2805_5*>(busPtr)); break;
       case I_32_RN_TM1914_3: delete (static_cast<B_32_RN_TM1914_3*>(busPtr)); break;
       case I_32_RN_SM16825_5: delete (static_cast<B_32_RN_SM16825_5*>(busPtr)); break;
+      case I_32_RN_2815B_3: delete (static_cast<B_32_RN_2815B_3*>(busPtr)); break;
       // I2S1 bus or paralell buses
       #ifndef CONFIG_IDF_TARGET_ESP32C3
       case I_32_I2_NEO_3: if (_useParallelI2S) delete (static_cast<B_32_IP_NEO_3*>(busPtr)); else delete (static_cast<B_32_I2_NEO_3*>(busPtr)); break;
@@ -1093,6 +1152,7 @@ class PolyBus {
       case I_32_I2_2805_5: if (_useParallelI2S) delete (static_cast<B_32_IP_2805_5*>(busPtr)); else delete (static_cast<B_32_I2_2805_5*>(busPtr)); break;
       case I_32_I2_TM1914_3: if (_useParallelI2S) delete (static_cast<B_32_IP_TM1914_3*>(busPtr)); else delete (static_cast<B_32_I2_TM1914_3*>(busPtr)); break;
       case I_32_I2_SM16825_5: if (_useParallelI2S) delete (static_cast<B_32_IP_SM16825_5*>(busPtr)); else delete (static_cast<B_32_I2_SM16825_5*>(busPtr)); break;
+      case I_32_I2_2815B_3: if (_useParallelI2S) delete (static_cast<B_32_IP_2815B_3*>(busPtr)); else delete (static_cast<B_32_I2_2815B_3*>(busPtr)); break;
       #endif
     #endif
       case I_HS_DOT_3: delete (static_cast<B_HS_DOT_3*>(busPtr)); break;
@@ -1164,6 +1224,10 @@ class PolyBus {
       case I_8266_U1_SM16825_5: size = (static_cast<B_8266_U1_SM16825_5*>(busPtr))->PixelsSize(); break;
       case I_8266_DM_SM16825_5: size = (static_cast<B_8266_DM_SM16825_5*>(busPtr))->PixelsSize()*5; break;
       case I_8266_BB_SM16825_5: size = (static_cast<B_8266_BB_SM16825_5*>(busPtr))->PixelsSize(); break;
+      case I_8266_U0_2815B_3: size = (static_cast<B_8266_U0_2815B_3*>(busPtr))->PixelsSize(); break;
+      case I_8266_U1_2815B_3: size = (static_cast<B_8266_U1_2815B_3*>(busPtr))->PixelsSize(); break;
+      case I_8266_DM_2815B_3: size = (static_cast<B_8266_DM_2815B_3*>(busPtr))->PixelsSize()*5; break;
+      case I_8266_BB_2815B_3: size = (static_cast<B_8266_BB_2815B_3*>(busPtr))->PixelsSize(); break;
     #endif
     #ifdef ARDUINO_ARCH_ESP32
       // RMT buses (front + back + small system managed RMT)
@@ -1179,6 +1243,7 @@ class PolyBus {
       case I_32_RN_2805_5: size += (static_cast<B_32_RN_2805_5*>(busPtr))->PixelsSize()*2; break;
       case I_32_RN_TM1914_3: size += (static_cast<B_32_RN_TM1914_3*>(busPtr))->PixelsSize()*2; break;
       case I_32_RN_SM16825_5: size += (static_cast<B_32_RN_SM16825_5*>(busPtr))->PixelsSize()*2; break;
+      case I_32_RN_2815B_3: size += (static_cast<B_32_RN_2815B_3*>(busPtr))->PixelsSize()*2; break;
       // I2S1 bus or paralell buses (front + DMA; DMA = front * cadence, aligned to 4 bytes) not: for parallel I2S only the largest bus counts for DMA memory, this is not done correctly here, also assumes 3-step cadence
       #ifndef CONFIG_IDF_TARGET_ESP32C3
       case I_32_I2_NEO_3: size += (_useParallelI2S) ? (static_cast<B_32_IP_NEO_3*>(busPtr))->PixelsSize()*4 : (static_cast<B_32_I2_NEO_3*>(busPtr))->PixelsSize()*4; break;
@@ -1193,6 +1258,7 @@ class PolyBus {
       case I_32_I2_2805_5: size += (_useParallelI2S) ? (static_cast<B_32_IP_2805_5*>(busPtr))->PixelsSize()*4 : (static_cast<B_32_I2_2805_5*>(busPtr))->PixelsSize()*4; break;
       case I_32_I2_TM1914_3: size += (_useParallelI2S) ? (static_cast<B_32_IP_TM1914_3*>(busPtr))->PixelsSize()*4 : (static_cast<B_32_I2_TM1914_3*>(busPtr))->PixelsSize()*4; break;
       case I_32_I2_SM16825_5: size += (_useParallelI2S) ? (static_cast<B_32_IP_SM16825_5*>(busPtr))->PixelsSize()*4 : (static_cast<B_32_I2_SM16825_5*>(busPtr))->PixelsSize()*4; break;
+      case I_32_I2_2815B_3: size += (_useParallelI2S) ? (static_cast<B_32_IP_2815B_3*>(busPtr))->PixelsSize()*4 : (static_cast<B_32_I2_2815B_3*>(busPtr))->PixelsSize()*4; break;
       #endif
     #endif
       case I_HS_DOT_3: size = (static_cast<B_HS_DOT_3*>(busPtr))->PixelsSize()*2; break;
@@ -1241,7 +1307,8 @@ class PolyBus {
       case I_8266_DM_400_3    : // fallthrough
       case I_8266_DM_TM2_3    : // fallthrough
       case I_8266_DM_APA106_3 : // fallthrough
-      case I_8266_DM_TM1914_3 : size *= 5;                   break;
+      case I_8266_DM_TM1914_3 : // fallthrough
+      case I_8266_DM_2815B_3  : size *= 5;                   break;
       case I_8266_DM_NEO_4    : // fallthrough
       case I_8266_DM_TM1_4    : size = (size + count)*5;     break;
       case I_8266_DM_UCS_3    : size *= 2*5;                 break;
@@ -1264,7 +1331,8 @@ class PolyBus {
       case I_32_I2_NEO_3    : // fallthrough
       case I_32_I2_400_3    : // fallthrough
       case I_32_I2_TM2_3    : // fallthrough
-      case I_32_I2_APA106_3 :                              break; // do nothing, I2S uses single buffer + DMA buffer
+      case I_32_I2_APA106_3 : // fallthrough
+      case I_32_I2_2815B_3  :                              break; // do nothing, I2S uses single buffer + DMA buffer
       case I_32_I2_NEO_4    : // fallthrough
       case I_32_I2_TM1_4    : size = (size + count);       break; // 4 channels
       case I_32_I2_UCS_3    : size *= 2;                   break; // 16 bit
@@ -1341,6 +1409,8 @@ class PolyBus {
           t = I_8266_U0_TM1914_3 + offset; break;
         case TYPE_SM16825:
           t = I_8266_U0_SM16825_5 + offset; break;
+        case TYPE_WS2815B:
+          t = I_8266_U0_2815B_3 + offset; break;
       }
       #else //ESP32
       // dynamic channel allocation based on driver preference
@@ -1384,6 +1454,8 @@ class PolyBus {
           t = I_32_RN_TM1914_3 + offset; break;
         case TYPE_SM16825:
           t = I_32_RN_SM16825_5 + offset; break;
+        case TYPE_WS2815B:
+          t = I_32_RN_2815B_3 + offset; break;
       }
       // If using parallel I2S, set the type accordingly
       if (_i2sChannelsAssigned == 1 && offset == 1) { // first I2S channel request, lock the type
